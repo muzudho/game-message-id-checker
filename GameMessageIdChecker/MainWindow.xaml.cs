@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs; // NuGetで 作者Aybeの `WindowsAPICodePack-Core`, `WindowsAPICodePack-Shell` 追加☆（＾～＾）
 
 namespace GameMessageIdChecker
@@ -62,11 +51,12 @@ namespace GameMessageIdChecker
                 {
                     var directory = dialog.FileName;
 
-                    // Create a FlowDocument to contain content for the RichTextBox.
-                    FlowDocument myFlowDoc = new FlowDocument();
+                    // リッチ・テキスト・ボックスは、左と右のふたつがあるぜ☆（＾～＾）
+                    FlowDocument leftFlowDoc = new FlowDocument();
+                    FlowDocument rightFlowDoc = new FlowDocument();
                     {
-                        // Create a paragraph and add the Run and Bold to it.
-                        Paragraph myParagraph = new Paragraph();
+                        Paragraph leftParagraph = new Paragraph();
+                        Paragraph rightParagraph = new Paragraph();
                         {
                             SearchesDirectory.Go(directory, (string fileEntry) =>
                             {
@@ -74,35 +64,35 @@ namespace GameMessageIdChecker
                                 // 圧縮ファイル読み込んでも嫌だよな☆（＾～＾） 拡張子は .txt （大文字小文字を区別しない）にしておこうぜ☆（＾～＾）
                                 if (System.IO.Path.GetExtension(fileEntry).ToUpper(CultureInfo.CurrentCulture) == ".TXT")
                                 {
-                                    var fileRun = new Run(fileEntry);
-                                    fileRun.Foreground = Brushes.LightGray;
-                                    myParagraph.Inlines.Add(fileRun);
-                                    myParagraph.Inlines.Add(new LineBreak());
-
                                     var msgDoc = MessageDocument.Read(fileEntry);
-                                    foreach(var key in msgDoc.Keys)
+                                    msgDoc.ScanIdRow((row, line) =>
                                     {
-                                        var keyRun = new Run(key);
-                                        myParagraph.Inlines.Add(keyRun);
-                                        myParagraph.Inlines.Add(new LineBreak());
-                                    }
+                                        // 左のリッチ・テキスト・ボックスへ☆（＾～＾）WordWrapしたくないので TextBlockで包むぜ☆（＾～＾）
+                                        var idRun = new Run(line.Text);
+                                        leftParagraph.Inlines.Add(new TextBlock(idRun));
+                                        leftParagraph.Inlines.Add(new LineBreak());
+
+                                        // 右のリッチ・テキスト・ボックスへ☆（＾～＾）WordWrapしたくないので TextBlockで包むぜ☆（＾～＾）
+                                        var text = string.Format(CultureInfo.CurrentCulture, "{0}:{1}", fileEntry, row);
+                                        var addressRun = new Run(text);
+                                        addressRun.Foreground = Brushes.LightGray;
+                                        rightParagraph.Inlines.Add(new TextBlock(addressRun));
+                                        rightParagraph.Inlines.Add(new LineBreak());
+                                    });
                                 }
                             });
 
                             // Add the paragraph to the FlowDocument.
-                            myFlowDoc.Blocks.Add(myParagraph);
+                            leftFlowDoc.Blocks.Add(leftParagraph);
+                            rightFlowDoc.Blocks.Add(rightParagraph);
                         }
 
                         // Add initial content to the RichTextBox.
-                        richTextBox.Document = myFlowDoc;
+                        leftRichTextBox.Document = leftFlowDoc;
+                        rightRichTextBox.Document = rightFlowDoc;
                     }
                 }
             }
-        }
-
-        private void richTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
 
         <Button Grid.Column="0" x:Name="checksDirectory" Content="Check Directory" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top" Width="189" Click="checksDirectory_Click"/>
-        <RichTextBox Grid.Column="0" x:Name="richTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <RichTextBox Grid.Column="0" x:Name="leftRichTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Visible">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="RichTextBox"/>
@@ -22,7 +22,7 @@
             </FlowDocument>
         </RichTextBox>
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-        <RichTextBox Grid.Column="2" x:Name="rightRichTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <RichTextBox Grid.Column="2" x:Name="rightRichTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Visible">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="RichTextBox"/>
