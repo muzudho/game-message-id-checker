@@ -7,14 +7,27 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" Width="800" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MinWidth="100"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Column="0" x:Name="checksDirectory" Content="Check Directory" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top" Width="189" Click="checksDirectory_Click"/>
+        <RichTextBox Grid.Column="0" x:Name="richTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="RichTextBox"/>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Button x:Name="checksDirectory" Content="Check Directory" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top" Width="189" Click="checksDirectory_Click"/>
-
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+        <RichTextBox Grid.Column="2" x:Name="rightRichTextBox" HorizontalAlignment="Center" Margin="0,77,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="RichTextBox"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>

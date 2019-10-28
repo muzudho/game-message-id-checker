@@ -99,5 +99,10 @@ namespace GameMessageIdChecker
                 }
             }
         }
+
+        private void richTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
