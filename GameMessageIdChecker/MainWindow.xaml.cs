@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -51,47 +52,44 @@ namespace GameMessageIdChecker
                 {
                     var directory = dialog.FileName;
 
-                    // リッチ・テキスト・ボックスは、左と右のふたつがあるぜ☆（＾～＾）
-                    FlowDocument leftFlowDoc = new FlowDocument();
-                    FlowDocument rightFlowDoc = new FlowDocument();
+                    // リッチ・テキスト・ボックスは使いにくかったので、ふつうのテキストボックスを使うぜ☆（＾～＾）
+                    // 左と右のふたつがあるぜ☆（＾～＾）
+                    SearchesDirectory.Go(directory, (string fileEntry) =>
                     {
-                        Paragraph leftParagraph = new Paragraph();
-                        Paragraph rightParagraph = new Paragraph();
+                        // entry は、ファイルのフルパス☆（＾～＾）
+                        // 圧縮ファイル読み込んでも嫌だよな☆（＾～＾） 拡張子は .txt （大文字小文字を区別しない）にしておこうぜ☆（＾～＾）
+                        if (System.IO.Path.GetExtension(fileEntry).ToUpper(CultureInfo.CurrentCulture) == ".TXT")
                         {
-                            SearchesDirectory.Go(directory, (string fileEntry) =>
+                            var msgDoc = MessageDocument.Read(fileEntry);
+                            msgDoc.ScanIdRow((row, line) =>
                             {
-                                // entry は、ファイルのフルパス☆（＾～＾）
-                                // 圧縮ファイル読み込んでも嫌だよな☆（＾～＾） 拡張子は .txt （大文字小文字を区別しない）にしておこうぜ☆（＾～＾）
-                                if (System.IO.Path.GetExtension(fileEntry).ToUpper(CultureInfo.CurrentCulture) == ".TXT")
-                                {
-                                    var msgDoc = MessageDocument.Read(fileEntry);
-                                    msgDoc.ScanIdRow((row, line) =>
-                                    {
-                                        // 左のリッチ・テキスト・ボックスへ☆（＾～＾）WordWrapしたくないので TextBlockで包むぜ☆（＾～＾）
-                                        var idRun = new Run(line.Text);
-                                        leftParagraph.Inlines.Add(new TextBlock(idRun));
-                                        leftParagraph.Inlines.Add(new LineBreak());
+                                // 左のテキスト・ボックスへ☆（＾～＾）
+                                this.leftTextBox.Text += $"{line.Text}\n";
 
-                                        // 右のリッチ・テキスト・ボックスへ☆（＾～＾）WordWrapしたくないので TextBlockで包むぜ☆（＾～＾）
-                                        var text = string.Format(CultureInfo.CurrentCulture, "{0}:{1}", fileEntry, row);
-                                        var addressRun = new Run(text);
-                                        addressRun.Foreground = Brushes.LightGray;
-                                        rightParagraph.Inlines.Add(new TextBlock(addressRun));
-                                        rightParagraph.Inlines.Add(new LineBreak());
-                                    });
-                                }
+                                // 右のテキスト・ボックスへ☆（＾～＾）
+                                var text = string.Format(CultureInfo.CurrentCulture, "{0}:{1}", fileEntry, row);
+                                this.rightTextBox.Text += $"{text}\n";
                             });
-
-                            // Add the paragraph to the FlowDocument.
-                            leftFlowDoc.Blocks.Add(leftParagraph);
-                            rightFlowDoc.Blocks.Add(rightParagraph);
                         }
-
-                        // Add initial content to the RichTextBox.
-                        leftRichTextBox.Document = leftFlowDoc;
-                        rightRichTextBox.Document = rightFlowDoc;
-                    }
+                    });
                 }
+            }
+        }
+
+        /// <summary>
+        /// 上書きボタン。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void overwritesButton_Click(object sender, RoutedEventArgs e)
+        {
+            Trace.WriteLine("leftText:" + this.leftTextBox.Text);
+
+            Trace.WriteLine("rightText:" + this.rightTextBox.Text);
+            var lines = rightTextBox.Text.Split('\n');
+            foreach (var line in lines)
+            {
+                Trace.WriteLine("Trace:" + line);
             }
         }
     }
