@@ -54,6 +54,9 @@ namespace GameMessageIdChecker
 
                     // リッチ・テキスト・ボックスは使いにくかったので、ふつうのテキストボックスを使うぜ☆（＾～＾）
                     // 左と右のふたつがあるぜ☆（＾～＾）
+                    this.leftTextBox.Text = string.Empty;
+                    this.rightTextBox.Text = string.Empty;
+
                     SearchesDirectory.Go(directory, (string fileEntry) =>
                     {
                         // entry は、ファイルのフルパス☆（＾～＾）
@@ -67,7 +70,7 @@ namespace GameMessageIdChecker
                                 this.leftTextBox.Text += $"{line.Text}\n";
 
                                 // 右のテキスト・ボックスへ☆（＾～＾）
-                                var text = string.Format(CultureInfo.CurrentCulture, "{0}:{1}", fileEntry, row);
+                                var text = string.Format(CultureInfo.CurrentCulture, "{0}>{1}:{2}", fileEntry, row, line.Text);
                                 this.rightTextBox.Text += $"{text}\n";
                             });
                         }
@@ -83,13 +86,48 @@ namespace GameMessageIdChecker
         /// <param name="e"></param>
         private void overwritesButton_Click(object sender, RoutedEventArgs e)
         {
+            /*
             Trace.WriteLine("leftText:" + this.leftTextBox.Text);
-
             Trace.WriteLine("rightText:" + this.rightTextBox.Text);
-            var lines = rightTextBox.Text.Split('\n');
-            foreach (var line in lines)
+            */
+
+            var leftLines = leftTextBox.Text.Split('\n');
+            var rightLines = rightTextBox.Text.Split('\n');
+
+            if (leftLines.Length != rightLines.Length)
             {
-                Trace.WriteLine("Trace:" + line);
+                Trace.WriteLine($"Error           | 長さが合いません。左={leftLines.Length} 右={rightLines.Length}");
+                return;
+            }
+
+            var size = leftLines.Length;
+            for (var i=0; i<size; i++)
+            {
+                // 最後は空文字列？
+                var left = leftLines[i];
+                var right = rightLines[i];
+
+                // ファイルパスに含まれない文字を区切りに使うぜ☆（＾～＾）
+                var firstColon = right.IndexOf(">", System.StringComparison.Ordinal);
+                if (0<firstColon)
+                {
+                    var secondColon = right.IndexOf(":", firstColon, System.StringComparison.Ordinal);
+                    if (0<secondColon)
+                    {
+                        var file = right.Substring(0, firstColon);
+                        var row = right.Substring(firstColon, secondColon - firstColon);
+                        var source = right.Substring(secondColon);
+                        Trace.WriteLine($"Trace: 左={left} ファイル={file} 行={row} 元={source}");
+                    }
+                    else
+                    {
+                        Trace.WriteLine($"Trace: 左={left}");
+                    }
+                }
+                else
+                {
+                    Trace.WriteLine($"Trace: 左={left}");
+                }
             }
         }
     }

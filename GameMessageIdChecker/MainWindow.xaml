@@ -16,7 +16,7 @@
         <Button Grid.Column="0" x:Name="checksDirectory" Content="Check Directory" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top" Width="189" Click="checksDirectory_Click"/>
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
         <Button x:Name="overwritesButton" Content="Overwrite" Grid.Column="2" Height="51" Margin="182,10,10,0" VerticalAlignment="Top" Click="overwritesButton_Click"/>
-        <TextBox x:Name="leftTextBox" Margin="0,66,5,0" Text="TextBox" TextWrapping="Wrap" Grid.ColumnSpan="2"/>
-        <TextBox x:Name="rightTextBox" Grid.Column="1" Margin="4,66,0,0" Text="TextBox" TextWrapping="Wrap" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="leftTextBox" Margin="0,66,5,0" Text="TextBox" TextWrapping="NoWrap" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="rightTextBox" Grid.Column="1" Margin="4,66,0,0" Text="TextBox" TextWrapping="NoWrap" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
