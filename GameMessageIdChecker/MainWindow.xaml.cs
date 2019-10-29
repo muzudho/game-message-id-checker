@@ -61,7 +61,7 @@
                             var msgDoc = MessageDocument.Read(fileEntry);
                             msgDoc.ScanIdRow((row, line) =>
                             {
-                                var sortsModel = new SortsModel(fileEntry, row, line.Text);
+                                var sortsModel = new SortsModel(fileEntry, row, line.Text, false);
                                 sortsModelList.Add(sortsModel);
                             });
                         }
@@ -77,6 +77,21 @@
                         });
                     }
 
+                    // 重複確認。１つ前と同じ名前なら重複☆（＾～＾）
+                    var previousName = string.Empty;
+                    for (int i = 0; i < sortsModelList.Count; i++)
+                    {
+                        var sortsModel = sortsModelList[i];
+                        var name = sortsModel.Name;
+                        if (i != 0 && previousName == name)
+                        {
+                            // 重複あり。
+                            sortsModelList[i] = new SortsModel(sortsModel.File, sortsModel.Row, sortsModel.Name, true);
+                        }
+
+                        previousName = name;
+                    }
+
                     // リッチ・テキスト・ボックスは使いにくかったので、ふつうのテキストボックスを使うぜ☆（＾～＾）
                     // 左と右のふたつがあるぜ☆（＾～＾）
                     this.leftTextBox.Text = string.Empty;
@@ -88,7 +103,7 @@
                         this.leftTextBox.Text += $"{sortsModel.Name}\n";
 
                         // 右のテキスト・ボックスへ☆（＾～＾）
-                        var text = string.Format(CultureInfo.CurrentCulture, "{0}>{1}:{2}", sortsModel.File, sortsModel.Row, sortsModel.Name);
+                        var text = string.Format(CultureInfo.CurrentCulture, "{0}{1}>{2}:{3}", sortsModel.Duplicated?"*":" ", sortsModel.File, sortsModel.Row, sortsModel.Name);
                         this.rightTextBox.Text += $"{text}\n";
                     }
                 }
@@ -127,37 +142,36 @@
                 // Trace.WriteLine($"left: {left}");
                 // Trace.WriteLine($"right: {right}");
 
-                // ファイルパスに含まれない文字を区切りに使うぜ☆（＾～＾）
-                var firstColon = right.IndexOf(">", System.StringComparison.Ordinal);
-                // Trace.WriteLine($"firstColon: {firstColon}");
-                if (0 < firstColon)
-                {
-                    var secondColon = right.IndexOf(":", firstColon, System.StringComparison.Ordinal);
-                    // Trace.WriteLine($"secondColon: {secondColon}");
-                    if (0 < secondColon)
-                    {
-                        var file = right.Substring(0, firstColon);
-                        // Trace.WriteLine($"file: {file}");
-                        var rowText = right.Substring(firstColon + 1, secondColon - (firstColon + 1));
-                        // Trace.WriteLine($"rowText: {rowText}");
-                        if (int.TryParse(rowText, out int row))
-                        {
-                            var oldName = right.Substring(secondColon + 1);
-                            // Trace.WriteLine($"oldName: {oldName}");
+                // 最初の１文字目は重複フラグなので無視☆（＾～＾）
+                var duplicatedFlagOver = 1;
 
-                            var renamesModel = new RenamesModel(left, file, row, oldName);
-                            renamesModelList.Add(renamesModel);
-                            // Trace.WriteLine($"Trace: {renamesModel.ToDisplay()}");
+                // ファイルパスに含まれない文字を区切りに使うぜ☆（＾～＾）
+                if (0<right.Length)
+                {
+                    var firstColon = right.IndexOf(">", duplicatedFlagOver, System.StringComparison.Ordinal);
+                    // Trace.WriteLine($"firstColon: {firstColon}");
+                    if (0 < firstColon)
+                    {
+                        var secondColon = right.IndexOf(":", firstColon, System.StringComparison.Ordinal);
+                        // Trace.WriteLine($"secondColon: {secondColon}");
+                        if (0 < secondColon)
+                        {
+                            var file = right.Substring(duplicatedFlagOver, firstColon - duplicatedFlagOver);
+                            // Trace.WriteLine($"file: {file}");
+                            var nextIdx = firstColon + 1;
+                            var rowText = right.Substring(nextIdx, secondColon - nextIdx);
+                            // Trace.WriteLine($"rowText: {rowText}");
+                            if (int.TryParse(rowText, out int row))
+                            {
+                                var oldName = right.Substring(secondColon + 1);
+                                // Trace.WriteLine($"oldName: {oldName}");
+
+                                var renamesModel = new RenamesModel(left, file, row, oldName);
+                                renamesModelList.Add(renamesModel);
+                                // Trace.WriteLine($"Trace: {renamesModel.ToDisplay()}");
+                            }
                         }
                     }
-                    else
-                    {
-                        // Trace.WriteLine($"Trace: 左={left}");
-                    }
-                }
-                else
-                {
-                    // Trace.WriteLine($"Trace: 左={left}");
                 }
             }
 
