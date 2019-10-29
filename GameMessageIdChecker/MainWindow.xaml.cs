@@ -53,10 +53,7 @@ namespace GameMessageIdChecker
                 {
                     var directory = dialog.FileName;
 
-                    // リッチ・テキスト・ボックスは使いにくかったので、ふつうのテキストボックスを使うぜ☆（＾～＾）
-                    // 左と右のふたつがあるぜ☆（＾～＾）
-                    this.leftTextBox.Text = string.Empty;
-                    this.rightTextBox.Text = string.Empty;
+                    var sortsModelList = new List<SortsModel>();
 
                     SearchesDirectory.Go(directory, (string fileEntry) =>
                     {
@@ -67,15 +64,36 @@ namespace GameMessageIdChecker
                             var msgDoc = MessageDocument.Read(fileEntry);
                             msgDoc.ScanIdRow((row, line) =>
                             {
-                                // 左のテキスト・ボックスへ☆（＾～＾）
-                                this.leftTextBox.Text += $"{line.Text}\n";
-
-                                // 右のテキスト・ボックスへ☆（＾～＾）
-                                var text = string.Format(CultureInfo.CurrentCulture, "{0}>{1}:{2}", fileEntry, row, line.Text);
-                                this.rightTextBox.Text += $"{text}\n";
+                                var sortsModel = new SortsModel(fileEntry, row, line.Text);
+                                sortsModelList.Add(sortsModel);
                             });
                         }
                     });
+
+                    // ソート。
+                    {
+                        sortsModelList.Sort((a, b) =>
+                        {
+                            // 大文字の Z のあとに 小文字の a が続いても見づらいんで、大文字小文字は無視するぜ☆（＾～＾）
+                            // こういうのは自然順ソートといって a, b と並んでいるとき a < b なら降順だぜ☆（＾～＾）逆にすれば昇順☆（＾ｑ＾）
+                            return string.Compare(a.Name, b.Name, System.StringComparison.OrdinalIgnoreCase);
+                        });
+                    }
+
+                    // リッチ・テキスト・ボックスは使いにくかったので、ふつうのテキストボックスを使うぜ☆（＾～＾）
+                    // 左と右のふたつがあるぜ☆（＾～＾）
+                    this.leftTextBox.Text = string.Empty;
+                    this.rightTextBox.Text = string.Empty;
+
+                    foreach (var sortsModel in sortsModelList)
+                    {
+                        // 左のテキスト・ボックスへ☆（＾～＾）
+                        this.leftTextBox.Text += $"{sortsModel.Name}\n";
+
+                        // 右のテキスト・ボックスへ☆（＾～＾）
+                        var text = string.Format(CultureInfo.CurrentCulture, "{0}>{1}:{2}", sortsModel.File, sortsModel.Row, sortsModel.Name);
+                        this.rightTextBox.Text += $"{text}\n";
+                    }
                 }
             }
         }
@@ -123,7 +141,7 @@ namespace GameMessageIdChecker
                     {
                         var file = right.Substring(0, firstColon);
                         Trace.WriteLine($"file: {file}");
-                        var rowText = right.Substring(firstColon + 1, secondColon - (firstColon+1));
+                        var rowText = right.Substring(firstColon + 1, secondColon - (firstColon + 1));
                         Trace.WriteLine($"rowText: {rowText}");
                         if (int.TryParse(rowText, out int row))
                         {
