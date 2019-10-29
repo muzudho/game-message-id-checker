@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-using Microsoft.WindowsAPICodePack.Dialogs; // NuGetで 作者Aybeの `WindowsAPICodePack-Core`, `WindowsAPICodePack-Shell` 追加☆（＾～＾）
-
-namespace GameMessageIdChecker
+﻿namespace GameMessageIdChecker
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Windows;
+    using Microsoft.WindowsAPICodePack.Dialogs; // NuGetで 作者Aybeの `WindowsAPICodePack-Core`, `WindowsAPICodePack-Shell` 追加☆（＾～＾）
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -121,53 +118,54 @@ namespace GameMessageIdChecker
 
             var renamesModelList = new List<RenamesModel>();
             var size = leftLines.Length;
-            Trace.WriteLine("size:" + size);
+            // Trace.WriteLine("size:" + size);
             for (var i = 0; i < size; i++)
             {
                 // 最後は空文字列？
                 var left = leftLines[i];
                 var right = rightLines[i];
-                Trace.WriteLine($"left: {left}");
-                Trace.WriteLine($"right: {right}");
+                // Trace.WriteLine($"left: {left}");
+                // Trace.WriteLine($"right: {right}");
 
                 // ファイルパスに含まれない文字を区切りに使うぜ☆（＾～＾）
                 var firstColon = right.IndexOf(">", System.StringComparison.Ordinal);
-                Trace.WriteLine($"firstColon: {firstColon}");
+                // Trace.WriteLine($"firstColon: {firstColon}");
                 if (0 < firstColon)
                 {
                     var secondColon = right.IndexOf(":", firstColon, System.StringComparison.Ordinal);
-                    Trace.WriteLine($"secondColon: {secondColon}");
+                    // Trace.WriteLine($"secondColon: {secondColon}");
                     if (0 < secondColon)
                     {
                         var file = right.Substring(0, firstColon);
-                        Trace.WriteLine($"file: {file}");
+                        // Trace.WriteLine($"file: {file}");
                         var rowText = right.Substring(firstColon + 1, secondColon - (firstColon + 1));
-                        Trace.WriteLine($"rowText: {rowText}");
+                        // Trace.WriteLine($"rowText: {rowText}");
                         if (int.TryParse(rowText, out int row))
                         {
                             var oldName = right.Substring(secondColon + 1);
-                            Trace.WriteLine($"oldName: {oldName}");
+                            // Trace.WriteLine($"oldName: {oldName}");
 
                             var renamesModel = new RenamesModel(left, file, row, oldName);
                             renamesModelList.Add(renamesModel);
-                            Trace.WriteLine($"Trace: {renamesModel.ToDisplay()}");
+                            // Trace.WriteLine($"Trace: {renamesModel.ToDisplay()}");
                         }
                     }
                     else
                     {
-                        Trace.WriteLine($"Trace: 左={left}");
+                        // Trace.WriteLine($"Trace: 左={left}");
                     }
                 }
                 else
                 {
-                    Trace.WriteLine($"Trace: 左={left}");
+                    // Trace.WriteLine($"Trace: 左={left}");
                 }
             }
 
-            Trace.WriteLine("renamesModelList.Count:" + renamesModelList.Count);
+            // Trace.WriteLine("renamesModelList.Count:" + renamesModelList.Count);
 
             // 行置換☆（＾～＾）
             // １行更新するだけでファイルを開け閉めするのは非効率だが　最初は簡単に実装しようぜ☆（＾～＾）
+            // ファイル順、行順にソートしなおして、ループの回数を減らせだぜ☆（＾～＾）
             foreach (var renamesModel in renamesModelList)
             {
                 ReplacesLine.Go(renamesModel);
