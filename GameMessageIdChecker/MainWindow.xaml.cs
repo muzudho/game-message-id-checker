@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -100,24 +101,39 @@ namespace GameMessageIdChecker
                 return;
             }
 
+            var renamesModelList = new List<RenamesModel>();
             var size = leftLines.Length;
-            for (var i=0; i<size; i++)
+            Trace.WriteLine("size:" + size);
+            for (var i = 0; i < size; i++)
             {
                 // 最後は空文字列？
                 var left = leftLines[i];
                 var right = rightLines[i];
+                Trace.WriteLine($"left: {left}");
+                Trace.WriteLine($"right: {right}");
 
                 // ファイルパスに含まれない文字を区切りに使うぜ☆（＾～＾）
                 var firstColon = right.IndexOf(">", System.StringComparison.Ordinal);
-                if (0<firstColon)
+                Trace.WriteLine($"firstColon: {firstColon}");
+                if (0 < firstColon)
                 {
                     var secondColon = right.IndexOf(":", firstColon, System.StringComparison.Ordinal);
-                    if (0<secondColon)
+                    Trace.WriteLine($"secondColon: {secondColon}");
+                    if (0 < secondColon)
                     {
                         var file = right.Substring(0, firstColon);
-                        var row = right.Substring(firstColon, secondColon - firstColon);
-                        var source = right.Substring(secondColon);
-                        Trace.WriteLine($"Trace: 左={left} ファイル={file} 行={row} 元={source}");
+                        Trace.WriteLine($"file: {file}");
+                        var rowText = right.Substring(firstColon + 1, secondColon - (firstColon+1));
+                        Trace.WriteLine($"rowText: {rowText}");
+                        if (int.TryParse(rowText, out int row))
+                        {
+                            var oldName = right.Substring(secondColon + 1);
+                            Trace.WriteLine($"oldName: {oldName}");
+
+                            var renamesModel = new RenamesModel(left, file, row, oldName);
+                            renamesModelList.Add(renamesModel);
+                            Trace.WriteLine($"Trace: {renamesModel.ToDisplay()}");
+                        }
                     }
                     else
                     {
@@ -128,6 +144,15 @@ namespace GameMessageIdChecker
                 {
                     Trace.WriteLine($"Trace: 左={left}");
                 }
+            }
+
+            Trace.WriteLine("renamesModelList.Count:" + renamesModelList.Count);
+
+            // 行置換☆（＾～＾）
+            // １行更新するだけでファイルを開け閉めするのは非効率だが　最初は簡単に実装しようぜ☆（＾～＾）
+            foreach (var renamesModel in renamesModelList)
+            {
+                ReplacesLine.Go(renamesModel);
             }
         }
     }

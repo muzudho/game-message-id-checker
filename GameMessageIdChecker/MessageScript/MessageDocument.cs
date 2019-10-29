@@ -52,7 +52,7 @@
                     instance.LineList.Add(model);
 
                     // 出力ウィンドウに出すぜ☆（＾～＾）
-                    Trace.WriteLine($"Comment         | {line}");
+                    // Trace.WriteLine($"Comment         | {line}");
                 }
                 else if (line.StartsWith("$", StringComparison.Ordinal))
                 {
@@ -61,7 +61,7 @@
                     instance.LineList.Add(model);
 
                     // 出力ウィンドウに出すぜ☆（＾～＾）
-                    Trace.WriteLine($"Key             | {line}");
+                    // Trace.WriteLine($"Key             | {line}");
                 }
                 else if (line.StartsWith("&", StringComparison.Ordinal))
                 {
@@ -70,7 +70,7 @@
                     instance.LineList.Add(model);
 
                     // 出力ウィンドウに出すぜ☆（＾～＾）
-                    Trace.WriteLine($"Instruction     | {line}");
+                    // Trace.WriteLine($"Instruction     | {line}");
                 }
                 else if (string.IsNullOrWhiteSpace(line))
                 {
@@ -79,7 +79,7 @@
                     instance.LineList.Add(model);
 
                     // 出力ウィンドウに出すぜ☆（＾～＾）
-                    Trace.WriteLine($"Empty           | {line}");
+                    // Trace.WriteLine($"Empty           | {line}");
                 }
                 else
                 {
@@ -87,7 +87,7 @@
                     var model = new LineModel(LineType.Body, line);
                     instance.LineList.Add(model);
 
-                    Trace.WriteLine($"Body            | {line}");
+                    // Trace.WriteLine($"Body            | {line}");
                 }
             }
 
